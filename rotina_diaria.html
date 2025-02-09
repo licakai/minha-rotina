@@ -1,0 +1,133 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotina Diária</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .clock {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .task {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .progress-container {
+            width: 80%;
+            background-color: #ddd;
+            height: 30px;
+            margin: 20px 0;
+            border-radius: 15px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0;
+            background-color: #4caf50;
+            border-radius: 15px;
+        }
+
+        .message {
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="clock" id="clock">00:00</div>
+        <div class="task" id="task">Aguardando tarefa...</div>
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="message" id="message"></div>
+    </div>
+
+    <script>
+        // Definindo as tarefas e os horários
+        const schedule = [
+            { time: '07:00', task: 'Iniciar', duration: 60 },
+            { time: '08:00', task: 'Iniciar ao máximo', duration: 60 },
+            { time: '09:00', task: 'Compensar o tempo perdido', duration: 60 },
+            { time: '10:00', task: 'Trabalho', duration: 120 },
+            { time: '12:00', task: 'Iniciar almoço', duration: 60 },
+            { time: '13:00', task: 'Almoçar', duration: 60 },
+            { time: '14:00', task: 'Trabalho', duration: 60 },
+            { time: '15:00', task: 'Trabalho $$$', duration: 60 },
+            { time: '17:00', task: 'Trabalho $$$$$', duration: 60 },
+            { time: '18:00', task: 'Trabalho $$$', duration: 60 },
+            { time: '19:00', task: 'Sem trabalho', duration: 60 },
+            { time: '20:00', task: 'Ler', duration: 60 },
+            { time: '21:00', task: 'Assistir algo divertido', duration: 30 },
+            { time: '21:30', task: 'Preparar-se para dormir', duration: 30 },
+            { time: '22:00', task: 'Dormir', duration: 0 },
+        ];
+
+        // Função para calcular o horário de João Pessoa
+        function getJoaoPessoaTime() {
+            const now = new Date();
+            const timeZoneOffset = -3; // João Pessoa é GMT-3
+            now.setHours(now.getHours() + timeZoneOffset);
+            return now;
+        }
+
+        // Atualizar o horário e a tarefa
+        function updateClockAndTask() {
+            const now = getJoaoPessoaTime();
+            const currentTime = now.toTimeString().slice(0, 5); // Formato HH:MM
+            const currentHour = now.getHours();
+
+            // Exibir o horário
+            document.getElementById('clock').textContent = currentTime;
+
+            // Encontrar a tarefa correspondente
+            let currentTask = 'Sem tarefa definida';
+            let progressValue = 0;
+            for (let i = 0; i < schedule.length; i++) {
+                if (currentTime >= schedule[i].time && currentTime < addMinutes(schedule[i].time, schedule[i].duration)) {
+                    currentTask = schedule[i].task;
+                    progressValue = ((now.getMinutes() - parseInt(schedule[i].time.split(":")[1])) / schedule[i].duration) * 100;
+                    break;
+                }
+            }
+
+            // Exibir a tarefa
+            document.getElementById('task').textContent = currentTask;
+
+            // Atualizar a barra de progresso
+            document.getElementById('progressBar').style.width = progressValue + '%';
+        }
+
+        // Função para adicionar minutos ao horário
+        function addMinutes(timeStr, minutes) {
+            const [hours, minutesStr] = timeStr.split(':');
+            const newDate = new Date();
+            newDate.setHours(hours);
+            newDate.setMinutes(parseInt(minutesStr) + minutes);
+            return newDate.toTimeString().slice(0, 5); 
+        }
+
+        // Atualização em tempo real a cada segundo
+        setInterval(updateClockAndTask, 1000);
+    </script>
+</body>
+</html>
